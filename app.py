@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import os
 import requests
 import json
+import kagglehub  # Tambahkan import kagglehub
 from werkzeug.utils import secure_filename
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
@@ -12,6 +13,29 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
+
+# Folder dataset Kaggle
+DATASET_FOOD_DIR = "/tmp/dataset-food-classification"
+DATASET_GIZI_DIR = "/tmp/tinggi-karbohidrat-lemak-protein"
+
+# Fungsi download dataset Kaggle
+def download_datasets():
+    if not os.path.exists(DATASET_FOOD_DIR):
+        print("Downloading Indonesian Food Dataset...")
+        kagglehub.dataset_download("rizkyyk/dataset-food-classification", path="/tmp")
+        print("Indonesian Food Dataset downloaded.")
+    else:
+        print("Indonesian Food Dataset already exists.")
+
+    if not os.path.exists(DATASET_GIZI_DIR):
+        print("Downloading Tinggi Karbohidrat/Lemak/Protein Dataset...")
+        kagglehub.dataset_download("muhammadrifki3ia28/tinggi-karbohidrat-lemak-protein", path="/tmp")
+        print("Tinggi Karbohidrat/Lemak/Protein Dataset downloaded.")
+    else:
+        print("Gizi Dataset already exists.")
+
+# Jalankan download dataset saat server start
+download_datasets()
 
 # Load model
 model_makanan = load_model("model/model_makanan.keras")
@@ -122,6 +146,5 @@ def index():
 
 # Run server
 if __name__ == "__main__":
-    import os
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
