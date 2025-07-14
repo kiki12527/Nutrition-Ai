@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+env/
+venv/
+dataset/
+dataset_gambar/
+.env
